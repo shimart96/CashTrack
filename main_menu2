@@ -1,0 +1,5 @@
+This XML file does not appear to have any style information associated with it. The document tree is shown below.
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<item android:id="@+id/item_back" android:text="Back" android:title="Back" android:showAsAction="ifRoom|withText"/>
+<item android:id="@+id/item_refr" android:text="Resfresh" android:title="Refresh" android:showAsAction="ifRoom|withText"/>
+</menu>
