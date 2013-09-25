@@ -1,0 +1,123 @@
+package com.s33me.cashtrack;
+
+import android.app.*;
+import android.app.Fragment;
+import android.app.DialogFragment;
+import android.os.*;
+import android.view.*;
+import android.widget.*;
+import java.lang.Object;
+import java.lang.String;
+import java.util.ArrayList;
+import java.util.List;
+import android.app.Activity;
+import android.app.ListActivity;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteProgram;
+import android.database.DatabaseUtils;
+import android.util.Log;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+import android.widget.ListView;
+import android.widget.EditText;
+import android.widget.Button;
+//import android.view.View;
+import android.content.ContentValues;
+import android.widget.SimpleCursorAdapter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import android.widget.Toast;
+import android.content.Intent;
+import android.widget.AdapterView.*;
+import android.content.Context;
+import android.content.*;
+
+	
+public class MyDiagFrag extends DialogFragment {
+	
+	public static String s;
+	public static long lid;
+	public static int ckin;
+	public String DB_NAME = "cashdb";
+   public String TBL_NAME = "cashtb";
+	public MyDiagFrag(String d, long l, int ck) {
+		//myContext = getActivity();  DONT USE
+		//need empty constructor
+		//receiving args from dataActivity
+		 	s = d;
+		 lid = l;
+		 ckin=ck;
+		
+	}
+	
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		AlertDialog.Builder aDb = new AlertDialog.Builder(getActivity());
+		aDb.setMessage("Sure about this?");
+		if (lid>0) {
+		    aDb.setTitle(s+": "+lid);
+		    aDb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface d, int which) {
+
+				((DataActivity)getActivity()).yesClick(lid);
+				
+				}
+				});
+				} else {
+				        if (ckin==0) {
+				            aDb.setTitle(s);
+		                 aDb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			               @Override
+			               public void onClick(DialogInterface d, int which) {
+
+			                         	((MainActivity)getActivity()).yesClick();
+				 
+				              }
+			             	 });
+                       }
+				
+				             if (ckin==2) {
+		                      aDb.setTitle(s);
+		                      aDb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			                    @Override
+			                    public void onClick(DialogInterface d, int which) {
+
+				                  ((MainActivity)getActivity()).yesClick2();
+				 
+			                    }
+			                  	});
+	                        	} 
+		
+		                      if (ckin==3) {
+		                      aDb.setTitle(s);
+		                      aDb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			                    @Override
+			                    public void onClick(DialogInterface d, int which) {
+
+				                  ((MainActivity)getActivity()).yesClick3();
+				 
+			                    }
+			                  	});
+	                        	} 
+
+		             }
+		
+		
+		aDb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface d, int which) {
+
+				d.dismiss();
+				
+				}
+				});
+				
+	return aDb.create();
+	}
+
+
+}
