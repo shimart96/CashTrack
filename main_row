@@ -1,0 +1,16 @@
+This XML file does not appear to have any style information associated with it. The document tree is shown below.
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/widget28" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical">
+<LinearLayout android:id="@+id/display" android:layout_width="fill_parent" android:layout_height="wrap_content">
+<TextView android:id="@+id/tdate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp"/>
+<TextView android:id="@+id/colon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp" android:text=" | "></TextView>
+<TextView android:id="@+id/tdb" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp"></TextView>
+<TextView android:id="@+id/l2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp" android:text=" | "></TextView>
+<TextView android:id="@+id/tcr" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp"></TextView>
+<TextView android:id="@+id/l3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp" android:text=" | "></TextView>
+<TextView android:id="@+id/tbal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp"/>
+<TextView android:id="@+id/l1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp" android:text=" | "></TextView>
+<TextView android:id="@+id/tnote" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp"></TextView>
+<TextView android:id="@+id/l4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp" android:text=" | "></TextView>
+<TextView android:id="@+id/idnum" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="24sp"></TextView>
+</LinearLayout>
+</LinearLayout>
