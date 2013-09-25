@@ -1,0 +1,305 @@
+package com.s33me.cashtrack;
+import android.content.Intent;
+import android.content.Context;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.*;
+import java.lang.Object;
+import java.lang.String;
+import java.util.ArrayList;
+import java.util.List;
+import android.app.Activity;
+import android.app.ListActivity;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteProgram;
+import android.database.DatabaseUtils;
+import android.util.Log;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+import android.widget.ListView;
+import android.widget.EditText;
+import android.widget.Button;
+import android.view.View;
+import android.content.ContentValues;
+import android.widget.SimpleCursorAdapter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import android.widget.Toast;
+import android.app.ActionBar;
+//import android.support.v4.app.ActionBar;
+import android.view.*;
+//import android.view.MenuInflater;
+
+
+//import android.os.Bundle;
+//import android.support.v4.app.FragmentActivity;
+//import android.support.v4.app.FragmentTransaction;
+
+public class MainActivity extends Activity
+{   private String DB_NAME = "cashdb";
+    private String TBL_NAME = "cashtb";
+
+    //
+    private String results = "";
+    //
+    private EditText db;
+    private EditText cr;
+    private EditText note;
+	private TextView newbal;
+	private TextView bal;
+    public ListView display;
+    //
+    private String wsnote="";
+	private String txtdb="0", txtcr="0", txtbal="0";
+	private double wscr, wsdb, wsbal;
+    private Long xid;
+    private int ck = 0;
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+	{
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+		//this gets default action bar with no customization
+	    ActionBar actbar = getActionBar();
+	
+		actbar.show();
+		actbar.setDisplayHomeAsUpEnabled(true);
+		
+        SQLiteDatabase dbobj = null;
+        try {
+			Log.i("cashtrack cr8ing DB for ","martin");
+            dbobj = this.openOrCreateDatabase(DB_NAME, MODE_PRIVATE, null);
+            dbobj.execSQL("CREATE TABLE IF NOT EXISTS " + TBL_NAME +
+                          " (_id INTEGER PRIMARY KEY AUTOINCREMENT," + 
+                          " note VARCHAR, " +
+                          " db DECIMAL(5,2), " +
+                          " cr DECIMAL(5,2), " +
+                          " bal DECIMAL(5,2), " +
+						  " logdt DATE DEFAULT CURRENT_DATE);");
+		} catch (SQLiteException se1) {
+			Log.e(getClass().getSimpleName(), "martin cashtrack Error on create.");
+		} 
+		finally {
+			if (dbobj != null)
+				dbobj.close();
+		}
+		note = (EditText)findViewById(R.id.note);
+        db = (EditText)findViewById(R.id.db);
+        cr = (EditText)findViewById(R.id.cr);
+        bal = (TextView)findViewById(R.id.bal);
+        newbal = (TextView)findViewById(R.id.newbal);
+
+        Button send = (Button)findViewById(R.id.send);
+send.setOnClickListener(new Button.OnClickListener() 
+         
+        {
+         public void onClick(View v)
+         {
+            long l =0;
+            int ck=0;
+            //passing title and id
+            //passing arts like this NO GOOD?
+            new MyDiagFrag("Log Transaction", l, ck).show(getFragmentManager(), "MyDiag");
+       }    
+        });
+		
+		Button get = (Button)findViewById(R.id.get);
+		get.setOnClickListener(new Button.OnClickListener() 
+
+			{
+				public void onClick(View v)
+				{
+					//make alert dialog with cancel
+					startActivity(new Intent(MainActivity.this,DataActivity.class));
+					}});
+					
+		Button change = (Button)findViewById(R.id.change);
+	change.setOnClickListener(new Button.OnClickListener() 
+
+	{
+	public void onClick(View v)
+	{
+		//make alert dialog with cancel
+		long l =0; //trigger positive button in MyDiagFrag
+		int ck=3;
+		 new MyDiagFrag("Recalc Balance", l, ck).show(getFragmentManager(), "MyDiag");
+
+    }
+});			
+}
+
+	private void addrec(String n, Double c, Double d) {
+
+        // insert
+
+		SQLiteDatabase dbobj = null;
+		dbobj = this.openOrCreateDatabase(DB_NAME, MODE_PRIVATE, null);
+		ContentValues initialValues = new ContentValues();
+		initialValues.put("note", n);
+		initialValues.put("cr", c);
+		initialValues.put("db", d);
+		
+		dbobj.insert(TBL_NAME, null, initialValues);
+		dbobj.close();
+		}
+		
+	 private void updrec(String n, Double d, Double c, Double b) {
+
+        // insert
+
+		SQLiteDatabase dbobj = null;
+		dbobj = this.openOrCreateDatabase(DB_NAME, MODE_PRIVATE, null);
+		ContentValues initialValues = new ContentValues();
+		initialValues.put("note", n);
+		initialValues.put("cr", c);
+		initialValues.put("db", d);
+			initialValues.put("bal", b);
+		
+		dbobj.insert(TBL_NAME, null, initialValues);
+		dbobj.close();
+		}
+ private void recalc() {
+
+        wsbal=0; wscr=0; wsdb=0;
+		SQLiteDatabase dbobj = null;
+		dbobj = this.openOrCreateDatabase(DB_NAME, MODE_PRIVATE, null);
+				             try {
+		                 dbobj = this.openOrCreateDatabase(DB_NAME, MODE_PRIVATE, null);
+		                Cursor c = dbobj.rawQuery("SELECT sum(db) as dbsum , sum(cr) crsum FROM " + TBL_NAME + " WHERE 1", null);
+
+                     int Col1 = c.getColumnIndex("dbsum");
+                     int Col2 = c.getColumnIndex("crsum");
+                     
+                     c.moveToFirst();
+
+                     if (c != null) {
+                     do {
+                        xid = c.getLong(Col1);
+                        wsdb = c.getDouble(Col1);
+                        wscr = c.getDouble(Col2);
+                        wsbal = wsdb - wscr; 
+                       
+                        // results = results + xbname + "/" + xph + "/" + xcname + "\n";
+                        }
+                     while(c.moveToNext());
+                     c.close();
+                     } 
+                     else { 
+                          if (Col1 <= 0 ) {
+                                 c.moveToNext(); reset();
+                             }
+                          }
+                    }
+                     catch (SQLiteException se1) {
+                           Log.e(getClass().getSimpleName(), "Error on get rec.");
+                      //     reset();
+                           } 
+                            finally {
+                                   if (dbobj != null) {
+                                       dbobj.close(); }
+                                    }
+                      
+                           
+		     }
+		
+ 
+    @Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+	//	MenuInflater inflater = getMenuInflater();
+	    getMenuInflater().inflate(R.menu.main_menu1, menu);
+		//inflater.inflate(R.menu.main_menu, menu);
+		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+		case R.id.item_prefs:
+			makeToast("Settings...");
+			break;
+		case R.id.item_exit:
+		finish();
+			makeToast("Exit?");
+			break;
+		
+		}
+		return true;
+		
+	}
+	public void makeToast(String msg) {
+		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+		
+	}
+	private void reset() {
+	  DecimalFormat df = new DecimalFormat("$#0.00");
+
+		db.setText(""); cr.setText(""); note.setText(""); newbal.setText(df.format(wsbal));
+		
+		
+	}
+		public void yesClick() {
+	
+            DecimalFormat df = new DecimalFormat("$#0.00");
+	         wsnote = note.getText().toString();
+			    txtdb=db.getText().toString();
+			    txtcr=cr.getText().toString(); 
+			 try {
+			       wsdb=Double.parseDouble(txtdb);
+				   } catch (NumberFormatException nfe) {
+				 nfe.printStackTrace();
+				 wsdb =0.0; }
+			 try {
+				 wscr=Double.parseDouble(txtcr);
+			 } catch (NumberFormatException nfe) {
+				 nfe.printStackTrace();
+				 wscr =0.0; }
+		     if ((wsdb > 0) || (wscr > 0)) addrec(wsnote, wscr, wsdb); 
+			 txtdb = df.format(wsdb); txtcr = df.format(wscr);
+			 //make alert dialog with cancel[
+			 Toast.makeText(getBaseContext(),"Last transaction had: "+wsnote+" | db: "+txtdb+" | cr: "+txtcr , Toast.LENGTH_LONG).show();
+			 reset();
+         }
+public void yesClick2() {
+	
+            DecimalFormat df = new DecimalFormat("$#0.00");
+	         //wsnote = note.getText().toString();
+	         wsnote="reset bal";
+	         wsdb=0.00; wscr=0.00;
+			    //txtdb=db.getText().toString();
+			    //txtcr=cr.getText().toString(); 
+			   // txtbal=newbal.getText().toString();
+			 try {
+			       wsbal=Double.parseDouble(txtbal);
+				   } catch (NumberFormatException nfe) {
+				 nfe.printStackTrace();
+				 wsbal =0.0; }
+		    updrec(wsnote, wsdb, wscr, wsbal); 
+			 Toast.makeText(getBaseContext(),"New balance is : "+wsnote+" | bal: "+wsbal , Toast.LENGTH_LONG).show();
+			 reset();
+         }
+public void yesClick3() {
+	
+            DecimalFormat df = new DecimalFormat("$#0.00");
+	         //wsnote = note.getText().toString();
+	         //txtdb=db.getText().toString();
+			    //txtcr=cr.getText().toString(); 
+			  ///  txtbal=newbal.getText().toString();
+			 //try {
+			  //     wsbal=Double.parseDouble(txtbal);
+				//   } catch (NumberFormatException nfe) {
+				 //nfe.printStackTrace();
+				 //wsbal =0.0; }
+		  //  updrec(wsnote, wsdb, wscr, wsbal); 
+		  recalc();
+			 Toast.makeText(getBaseContext(),"Recalculating... : " + wsdb +" - "+ wscr+" = "+wsbal, Toast.LENGTH_LONG).show();
+			reset(); 
+			 
+         }
+
+
+}
+	  
