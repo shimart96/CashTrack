@@ -1,0 +1,180 @@
+package com.s33me.cashtrack;
+
+import android.app.*;
+import android.os.*;
+import android.view.*;
+import android.widget.*;
+import java.lang.Object;
+import java.lang.String;
+import java.util.ArrayList;
+import java.util.List;
+import android.app.Activity;
+import android.app.ListActivity;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteProgram;
+import android.database.DatabaseUtils;
+import android.util.Log;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+import android.widget.ListView;
+import android.widget.EditText;
+import android.widget.Button;
+//import android.view.View;
+import android.content.ContentValues;
+import android.widget.SimpleCursorAdapter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import android.widget.Toast;
+import android.content.Intent;
+import android.widget.AdapterView.*;
+import android.content.Context;
+import android.content.*;
+import com.s33me.cashtrack.*;
+
+public class DataActivity extends Activity
+{   private String DB_NAME = "cashdb";
+    private String TBL_NAME = "cashtb";
+    private TextView eid;
+    private TextView edb;
+    private TextView ecr;
+    private TextView enote;
+	private TextView ebal;
+	private TextView edate;
+    public ListView lv;
+    //
+    private String wsnote="";
+    private String wsid="0";
+	private String txtdb="0", txtcr="0", txtbal="0";
+	private double wscr, wsdb, wsbal;
+	public ArrayList<String> list = new ArrayList<String>();
+	public String []sqlist; // emulate 6 col table
+	public long lid;
+   public Cursor a; 
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+	{
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.mainlist);
+		ActionBar actbar = getActionBar();
+
+		actbar.show();
+		actbar.setDisplayHomeAsUpEnabled(true);
+		// Declare Screen output
+      lv = (ListView)findViewById(R.id.list);
+     
+		Toast.makeText(getBaseContext(),"New activity: DataActivity ", Toast.LENGTH_LONG).show();
+		
+		// list all records
+        SQLiteDatabase dbobj = null;
+			dbobj = this.openOrCreateDatabase(DB_NAME, MODE_PRIVATE, null);
+			
+			try {
+				 a = dbobj.query(TBL_NAME, new String[] {
+										    "logdt", "db", "cr", "bal", "_id", "note"},
+									   null, null, null, null, null);
+
+				startManagingCursor(a);
+
+				a.moveToFirst();
+          String[] from = new String[]  {"logdt", "db", "cr", "bal", "_id", "note" };
+				int[] to = new int[] { R.id.tdate, R.id.tdb, R.id.tcr, R.id.tbal, R.id.idnum, R.id.tnote };
+			//	int Col1 = a.getColumnIndex("_id");
+				//lid = a.getLong(Col1);
+				SimpleCursorAdapter mAdapter = new SimpleCursorAdapter(this, R.layout.main_row, a, from, to);
+				mAdapter.notifyDataSetChanged();
+				lv.setAdapter(mAdapter);
+				lv.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view, int position1, long id) {
+					    //TextView tvid = (TextView)findViewById(R.id.idnum);
+					   // String sid = tvid.getText().toString();
+					  int Col1 = a.getColumnIndex("_id");
+			       lid = a.getLong(Col1);
+					  new MyDiagFrag("Delete", lid, 0).show(getFragmentManager(), "MyDiag");
+					  // see yesClick();
+					
+					}
+					
+					
+				});
+          //  ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
+//			lv.setAdapter(adapter);
+
+
+			} catch (SQLiteException e2) {
+				Log.e("exception on get all", e2.toString());
+			} 
+			finally {
+				if (dbobj != null) {
+					dbobj.close(); }
+			}
+			//
+			//
+
+			dbobj.close();
+		
+		}
+		
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		//	MenuInflater inflater = getMenuInflater();
+	    getMenuInflater().inflate(R.menu.main_menu2, menu);
+		//inflater.inflate(R.menu.main_menu, menu);
+		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+			case R.id.item_back:
+				startActivity(new Intent(DataActivity.this,MainActivity.class));
+				finish();
+				break;
+			case R.id.item_refr:
+				//makeToast("Refresh");
+				 finish(); startActivity(getIntent());
+				break;
+
+		}
+		return true;
+
+	}
+	
+	     public void del(long lid) {
+
+             //wsbname=edbname.getText().toString();
+
+             SQLiteDatabase dbobj = null;
+             
+             // delete after get rec and bname and row id are exact match
+		             try {
+		                 dbobj = this.openOrCreateDatabase(DB_NAME, MODE_PRIVATE, null);
+		                 dbobj.execSQL("DELETE FROM " + TBL_NAME + " WHERE (_id = " + lid + ");");
+		                  }
+		                  catch (SQLiteException se1) {
+		                           Log.e(getClass().getSimpleName(), "Error on del rec");
+		                           //reset();
+		                         } 
+		                            finally {
+		                                   if (dbobj != null) {
+		                                       dbobj.close(); }
+		                                    }
+		    
+		         
+		            //reset();
+		
+		        
+		     }
+	public void makeToast(String msg) {
+		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+
+	}
+	public void yesClick(long yi) {
+	
+	del(yi);
+	}
+}	  
