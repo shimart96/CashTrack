@@ -1,0 +1,13 @@
+This XML file does not appear to have any style information associated with it. The document tree is shown below.
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="horizontal">
+<EditText android:id="@+id/note" android:layout_width="wrap_content" android:layout_height="wrap_content" android:hint="note" android:textSize="18dp"/>
+<EditText android:id="@+id/db" android:layout_width="wrap_content" android:layout_height="wrap_content" android:hint="+ debit" android:textSize="18dp"/>
+<EditText android:id="@+id/cr" android:layout_width="wrap_content" android:layout_height="wrap_content" android:hint="- credit" android:textSize="18dp"/>
+<TextView android:id="@+id/bal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=""/>
+<Button android:id="@+id/send" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Add" android:onClick="sendMessage"/>
+<TextView android:id="@+id/div" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" | "/>
+<Button android:id="@+id/get" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="List" android:onClick="sendMessage"/>
+<TextView android:id="@+id/div2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" | "/>
+<Button android:id="@+id/change" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Calc" android:onClick="sendMessage"/>
+<TextView android:id="@+id/newbal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:hint="" android:textSize="18dp"/>
+</LinearLayout>
